@@ -1,0 +1,26 @@
+:root {
+  --mpos-primary: #0d9488;
+  --mpos-primary-dark: #0f766e;
+  --mpos-primary-light: #ccfbf1;
+  --mpos-surface: #f0fdfa;
+  --mpos-card: #ffffff;
+  --mpos-text: #134e4a;
+  --mpos-text-muted: #5eead4;
+}
+
+body {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Touch-friendly tap targets on mobile */
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+}
