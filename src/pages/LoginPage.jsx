@@ -106,7 +106,8 @@ function LoginPage() {
 
         {/* Right Panel - Branding */}
         <div className="relative flex-1 min-h-[280px] lg:min-h-[600px] bg-linear-to-br from-green-600 via-green-500 to-emerald-600 order-1 lg:order-2">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1200')] bg-cover bg-center" />
+          {/* <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1200')] bg-cover bg-center" /> */}
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')] bg-cover bg-center" />
           <div className="absolute inset-0 bg-linear-to-b from-green-900/40 via-green-800/35 to-emerald-900/50" />
           <div className="relative h-full flex flex-col items-center justify-center p-8 text-white text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">POS LAZIS</h2>
