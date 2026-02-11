@@ -1,10 +1,14 @@
 /**
  * Normalize data from either history item or success response to receipt payload.
  * @param {object} data - History item or create-transaction success response
- * @returns {object} Normalized { tanggal, nomorBukti, nama, noHp, email, alamat, kategori, subKategori, nominal, terbilang, metodePembayaran, namaEvent, lokasiEvent }
+ * @param {object} user - Current logged in user (optional)
+ * @returns {object} Normalized { tanggal, nomorBukti, nama, noHp, email, alamat, kategori, subKategori, nominal, terbilang, metodePembayaran, namaEvent, lokasiEvent, kasir }
  */
-export function normalizeReceiptData(data) {
+export function normalizeReceiptData(data, user = null) {
   if (!data) return null
+  
+  const kasirName = user?.name || user?.email || 'SYSTEM'
+  
   // History item shape
   if (data.nomorBukti !== undefined) {
     return {
@@ -21,6 +25,7 @@ export function normalizeReceiptData(data) {
       metodePembayaran: data.metodePembayaran,
       namaEvent: data.namaEvent ?? '',
       lokasiEvent: data.lokasiEvent ?? '',
+      kasir: kasirName,
     }
   }
   // Success response shape (donasi array + terbilang)
@@ -39,6 +44,7 @@ export function normalizeReceiptData(data) {
     metodePembayaran: data.metodePembayaran ?? 'tunai',
     namaEvent: data.namaEvent ?? '',
     lokasiEvent: data.lokasiEvent ?? '',
+    kasir: kasirName,
   }
 }
 
@@ -56,45 +62,159 @@ function escapeHtml(s) {
     .replace(/"/g, '&quot;')
 }
 
+/**
+ * Potong string sesuai lebar kolom (32 untuk 58mm)
+ */
+function cutText(text, len) {
+  const t = String(text || '')
+  if (t.length <= len) return t
+  return t.substring(0, len)
+}
+
+/**
+ * Format baris kiri-kanan sejajar untuk lebar 32 kolom
+ */
+function lineLR(left, right, width = 32) {
+  const leftStr = String(left || '')
+  const rightStr = String(right || '')
+  const leftLen = leftStr.length
+  const rightLen = rightStr.length
+  const space = Math.max(1, width - leftLen - rightLen)
+  return leftStr + ' '.repeat(space) + rightStr
+}
+
+/**
+ * Garis horizontal
+ */
+function hr(width = 32, char = '-') {
+  return char.repeat(width)
+}
+
+/**
+ * Wrap text untuk nama barang/kategori panjang
+ */
+function wordWrap(text, width) {
+  const words = String(text || '').split(' ')
+  const lines = []
+  let currentLine = ''
+  
+  for (const word of words) {
+    const testLine = currentLine ? currentLine + ' ' + word : word
+    if (testLine.length <= width) {
+      currentLine = testLine
+    } else {
+      if (currentLine) lines.push(currentLine)
+      currentLine = word.length > width ? word.substring(0, width) : word
+    }
+  }
+  if (currentLine) lines.push(currentLine)
+  
+  return lines.length > 0 ? lines : ['']
+}
+
 function buildThermalHtml(r) {
-  const w = '80mm'
-  return `<!DOCTYPE html>
+  const W = 32 // Total kolom untuk thermal 58mm
+  const storeName = 'LAZIS SULTAN AGUNG'
+  const storeCV = 'YAYASAN LAZIS SULTAN AGUNG'
+  const storeAddr = 'JL. SOEKARNO HATTA NO 97A, TLOGOSARI KULON, PEDURUNGAN SEMARANG'
+  
+  // Format tanggal
+  const tanggal = r.tanggal || ''
+  const lokasi = r.lokasiEvent || 'Semarang'
+  const kasir = r.kasir || 'SYSTEM'
+  const customer = r.nama || ''
+  
+  // Item donasi
+  const kategoriFull = r.subKategori ? `${r.kategori} - ${r.subKategori}` : r.kategori
+  const nominal = Number(r.nominal) || 0
+  
+  // Summary (untuk donasi sederhana)
+  const netto = nominal
+  const bayar = nominal
+  const metodeBayar = (r.metodePembayaran || 'TUNAI').toUpperCase()
+  
+  // Build HTML
+  let html = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <title>Struk Donasi</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { width: ${w}; max-width: ${w}; font-family: monospace; font-size: 12px; line-height: 1.35; padding: 8px; color: #000; }
+    @page { size: 58mm auto; margin: 0; }
+    body { 
+      width: 58mm; 
+      max-width: 58mm; 
+      font-family: 'Courier New', monospace; 
+      font-size: 11px; 
+      line-height: 1.2; 
+      padding: 4mm 3mm; 
+      color: #000; 
+      margin: 0 auto;
+    }
     .center { text-align: center; }
     .bold { font-weight: bold; }
-    .mt { margin-top: 6px; }
-    .mt2 { margin-top: 10px; }
-    hr { border: none; border-top: 1px dashed #333; margin: 6px 0; }
-    @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+    .left { text-align: left; }
+    pre { 
+      font-family: 'Courier New', monospace; 
+      font-size: 11px; 
+      line-height: 1.2; 
+      white-space: pre-wrap; 
+      word-wrap: break-word;
+      margin: 0;
+    }
+    @media print { 
+      body { 
+        -webkit-print-color-adjust: exact; 
+        print-color-adjust: exact;
+        margin: 0;
+        padding: 4mm 3mm;
+      }
+      @page { margin: 0; }
+    }
   </style>
 </head>
 <body>
-  <div class="center bold">LAZIS - STRUK DONASI</div>
-  <div class="center" style="font-size:10px;">${escapeHtml(r.namaEvent)} ${r.lokasiEvent ? ` | ${escapeHtml(r.lokasiEvent)}` : ''}</div>
-  <hr>
-  <div>No. Bukti : ${escapeHtml(r.nomorBukti)}</div>
-  <div>Tanggal   : ${escapeHtml(r.tanggal)}</div>
-  <hr>
-  <div>Nama      : ${escapeHtml(r.nama)}</div>
-  <div>No. HP    : ${escapeHtml(r.noHp)}</div>
-  <div>Email     : ${escapeHtml(r.email)}</div>
-  <div>Alamat    : ${escapeHtml(r.alamat)}</div>
-  <hr>
-  <div>Kategori  : ${escapeHtml(r.kategori)}</div>
-  <div>Sub Kat   : ${escapeHtml(r.subKategori)}</div>
-  <div class="mt">Nominal   : Rp ${formatRupiah(r.nominal)}</div>
-  ${r.terbilang ? `<div style="font-size:10px;">Terbilang : ${escapeHtml(r.terbilang)}</div>` : ''}
-  <div class="mt">Bayar     : ${escapeHtml(r.metodePembayaran)}</div>
-  <hr>
-  <div class="center mt2" style="font-size:10px;">Terima kasih atas donasi Anda</div>
+<pre class="center bold">${cutText(storeName, W)}</pre>
+<pre class="center">${cutText(storeCV, W)}</pre>
+<pre class="center" style="font-size: 9px;">${cutText(storeAddr, W)}</pre>
+<pre></pre>
+<pre>${hr(W)}</pre>
+<pre>${lineLR('NOMOR   : ' + cutText(r.nomorBukti || '', W - 11), '', W)}</pre>
+<pre>${lineLR('TANGGAL : ' + cutText(tanggal, W - 11), '', W)}</pre>
+<pre>${lineLR('LOKASI  : ' + cutText(lokasi, W - 11), '', W)}</pre>
+<pre>${lineLR('KASIR   : ' + cutText(kasir, W - 11), '', W)}</pre>
+<pre>${lineLR('CUSTOMER: ' + cutText(customer, W - 11), '', W)}</pre>
+<pre>${hr(W)}</pre>
+<pre></pre>`
+
+  // Print item (kategori donasi)
+  const kategoriLines = wordWrap(kategoriFull, W)
+  kategoriLines.forEach(line => {
+    html += `<pre>${cutText(line, W)}</pre>`
+  })
+  html += `<pre>${lineLR('1 PCS @ ' + formatRupiah(nominal), formatRupiah(nominal), W)}</pre>`
+  html += `<pre></pre>`
+  
+  html += `<pre>${hr(W)}</pre>
+<pre></pre>
+<pre class="bold">${lineLR('NETTO  :', formatRupiah(netto), W)}</pre>
+<pre></pre>
+<pre>${lineLR('BAYAR  :', formatRupiah(bayar), W)}</pre>
+<pre>${lineLR('METODE :', cutText(metodeBayar, 15), W)}</pre>
+<pre></pre>
+<pre>${hr(W)}</pre>
+<pre></pre>
+<pre class="center" style="font-size: 9px;">Terima kasih atas donasi anda.</pre>
+<pre class="center" style="font-size: 9px;">Semoga menjadi amal jariyah</pre>
+<pre class="center" style="font-size: 9px;">yang berkah dan bermanfaat.</pre>
+<pre></pre>
+<pre></pre>
+<pre></pre>
 </body>
 </html>`
+
+  return html
 }
 
 function buildNormalHtml(r) {
@@ -139,10 +259,11 @@ function buildNormalHtml(r) {
 /**
  * Open print dialog with receipt content.
  * @param {object} data - History item or success response (will be normalized)
- * @param {'thermal'|'normal'} mode - 'thermal' for thermal printer (80mm), 'normal' for A4
+ * @param {'thermal'|'normal'} mode - 'thermal' for thermal printer (58mm), 'normal' for A4
+ * @param {object} user - Current logged in user (optional, for kasir name)
  */
-export function printReceipt(data, mode = 'normal') {
-  const r = normalizeReceiptData(data)
+export function printReceipt(data, mode = 'normal', user = null) {
+  const r = normalizeReceiptData(data, user)
   if (!r) return
 
   const html = mode === 'thermal' ? buildThermalHtml(r) : buildNormalHtml(r)

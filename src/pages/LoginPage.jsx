@@ -30,7 +30,7 @@ function LoginPage() {
 
   return (
     <div className="min-h-screen bg-zinc-100 flex items-center justify-center p-4 md:p-6">
-      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col lg:flex-row">
+      <div className="w-full max-w-5xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col lg:flex-row">
         {/* Left Panel - Login Form */}
         <div className="flex-1 p-8 md:p-10 lg:p-12 flex flex-col justify-center order-2 lg:order-1">
           <div className="max-w-md mx-auto w-full">
