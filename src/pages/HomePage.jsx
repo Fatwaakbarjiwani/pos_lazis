@@ -670,7 +670,7 @@ export default function HomePage() {
                                 </p>
                               </div>
                               {active && (
-                                <div className="absolute right-4 bottom-4 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500">
+                                <div className="absolute right-4 top-4 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500">
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     className="h-3 w-3 text-white"
