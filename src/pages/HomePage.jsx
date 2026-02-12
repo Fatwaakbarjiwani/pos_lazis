@@ -270,7 +270,11 @@ export default function HomePage() {
                       <div className="flex justify-between">
                         <span className="text-zinc-500">Total donasi</span>
                         <span className="font-bold text-emerald-600">
-                          Rp {formatRupiah(transactionSuccess.totalNominal || 0)}
+                          Rp {formatRupiah(
+                            transactionSuccess.totalNominal
+                              ?? transactionSuccess.donasi?.reduce((s, d) => s + Number(d.nominal || 0), 0)
+                              ?? 0
+                          )}
                         </span>
                       </div>
                     </div>
@@ -661,7 +665,7 @@ export default function HomePage() {
                                     ? 'Bank Transfer'
                                     : 'QRIS'}
                                 </p>
-                                <p className="mt-1 text-xs text-zinc-500">
+                                <p className="mt-1 text-xs text-zinc-500 xl:block hidden">
                                   {opt.value === 'tunai'
                                     ? 'Accept cash directly from donor'
                                     : opt.value === 'transfer'
