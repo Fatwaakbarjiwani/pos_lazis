@@ -75,11 +75,11 @@ export default function PendingPage() {
   }
 
   return (
-    <main className="flex min-h-0 flex-1 flex-col overflow-auto bg-zinc-50 pt-6">
-      <div className="mx-auto w-full pr-[8%] pl-[4%]">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-zinc-900">Transaksi Pending</h1>
-          <p className="mt-2 text-sm text-zinc-500">
+    <main className="flex min-h-0 flex-1 flex-col overflow-auto bg-zinc-50 pt-4 sm:pt-6">
+      <div className="mx-auto w-full px-4 sm:pr-[8%] sm:pl-[4%]">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900">Transaksi Pending</h1>
+          <p className="mt-2 text-xs sm:text-sm text-zinc-500">
             Transaksi yang belum divalidasi — cetak struk lalu validasi untuk masuk ke history
           </p>
         </div>
@@ -134,7 +134,7 @@ export default function PendingPage() {
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {tempTransactions.map((row) => (
                 <div
                   key={row.id}

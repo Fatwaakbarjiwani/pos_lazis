@@ -204,11 +204,11 @@ export default function HomePage() {
 
   return (
     <>
-      <main className="flex min-h-0 flex-1 flex-col overflow-auto bg-zinc-50 pt-6">
-        <div className="mx-auto w-full pr-[8%] pl-[4%]">
+      <main className="flex min-h-0 flex-1 flex-col overflow-auto bg-zinc-50 pt-4 sm:pt-6 overflow-hidden">
+        <div className="mx-auto w-full px-4 sm:pr-[8%] sm:pl-[4%]">
           {transactionSuccess ? (
-            <div className="mx-auto max-w-3xl overflow-hidden rounded-3xl border border-emerald-100 bg-white shadow-xl shadow-zinc-200/40 ring-1 ring-zinc-200/50">
-              <div className="border-b border-emerald-100 bg-gradient-to-r from-emerald-500 via-emerald-500 to-teal-500 px-8 py-8 text-center">
+            <div className="mx-auto max-w-3xl overflow-hidden rounded-2xl sm:rounded-3xl border border-emerald-100 bg-white shadow-xl shadow-zinc-200/40 ring-1 ring-zinc-200/50">
+              <div className="border-b border-emerald-100 bg-gradient-to-r from-emerald-500 via-emerald-500 to-teal-500 px-4 py-6 sm:px-8 sm:py-8 text-center">
                 <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 ring-2 ring-white/60">
                   <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
@@ -231,7 +231,7 @@ export default function HomePage() {
                   </div>
                 )}
               </div>
-              <div className="space-y-4 px-8 py-7 text-sm text-zinc-800">
+              <div className="space-y-4 px-4 py-5 sm:px-8 sm:py-7 text-sm text-zinc-800">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="rounded-2xl bg-zinc-50 p-4">
                     <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
@@ -301,7 +301,7 @@ export default function HomePage() {
                   ))}
                 </div>
               </div>
-              <div className="border-t border-zinc-200 bg-zinc-50 px-8 py-5 space-y-3">
+              <div className="border-t border-zinc-200 bg-zinc-50 px-4 py-4 sm:px-8 sm:py-5 space-y-3">
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <button
                     type="button"
@@ -333,13 +333,13 @@ export default function HomePage() {
 
               <div className="flex flex-col gap-6 lg:flex-row">
                 <div className="flex-1 min-w-0">
-                  <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-md">
-                  <div className="mb-8 flex items-center justify-between">
+                  <div className="rounded-2xl border border-zinc-200 bg-white p-4 sm:p-6 lg:p-8 shadow-md">
+                  <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <div className="h-8 w-1.5 rounded-full bg-emerald-500" />
-                      <h2 className="text-xl font-bold text-zinc-900">New Donation Transaction</h2>
+                      <h2 className="text-lg sm:text-xl font-bold text-zinc-900">New Donation Transaction</h2>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-zinc-500">
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-zinc-500">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
@@ -416,7 +416,7 @@ export default function HomePage() {
                     </div>
 
                     <div>
-                      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                      <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
                         <div className="space-y-5">
                           <label className="block">
                             <span className="mb-2 block text-xs font-semibold uppercase tracking-wider text-zinc-700">
@@ -521,7 +521,7 @@ export default function HomePage() {
                       <label className="mb-4 block text-sm font-medium text-zinc-700">
                         Select Donation Type
                       </label>
-                      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
                         {CATEGORY_TYPES.map((opt) => {
                           const active = form.categoryType === opt.value
                           return (
@@ -593,7 +593,7 @@ export default function HomePage() {
                       <label className="mb-4 block text-sm font-medium text-zinc-700">
                         Select Payment Type
                       </label>
-                      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                      <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-3">
                         {PAYMENT_METHODS.map((opt) => {
                           const active = form.paymentMethod === opt.value
                           return (
@@ -665,7 +665,7 @@ export default function HomePage() {
                                     ? 'Bank Transfer'
                                     : 'QRIS'}
                                 </p>
-                                <p className="mt-1 text-xs text-zinc-500 xl:block hidden">
+                                <p className="mt-1 text-xs text-zinc-500 hidden lg:block">
                                   {opt.value === 'tunai'
                                     ? 'Accept cash directly from donor'
                                     : opt.value === 'transfer'
@@ -771,7 +771,7 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <aside className="w-full lg:w-80 shrink-0 space-y-6">
+                <aside className="w-full lg:w-80 shrink-0 space-y-4 sm:space-y-6">
                   <TypeDistribution categoryNominal={dashboard?.categoryNominalSummary} />
                   <OngoingCampaigns eventSummary={dashboard?.eventSummary} />
                   <RecentActivity historyContent={

@@ -105,25 +105,23 @@ export default function HistoryPage() {
   const totalNominalPage = history?.content?.reduce((s, row) => s + Number(row.nominal || 0), 0) ?? 0
 
   return (
-    <main className="flex min-h-0 flex-1 flex-col overflow-auto bg-zinc-50 pt-6">
-      <div className="mx-auto w-full pr-[8%] pl-[4%]">
-        {/* Hero header - same style as GrafikPage */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 text-sm font-medium text-emerald-600">
+    <main className="flex min-h-0 flex-1 flex-col overflow-auto bg-zinc-50 pt-4 sm:pt-6">
+      <div className="mx-auto w-full px-4 sm:pr-[8%] sm:pl-[4%]">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-emerald-600">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span>Riwayat</span>
           </div>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-zinc-900">History Transaksi</h1>
-          <p className="mt-2 max-w-xl text-sm text-zinc-500">
+          <h1 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">History Transaksi</h1>
+          <p className="mt-2 max-w-xl text-xs sm:text-sm text-zinc-500">
             Riwayat donasi yang sudah divalidasi. Filter berdasarkan periode, kategori, event, atau metode pembayaran — cetak struk thermal atau biasa.
           </p>
         </div>
 
-        {/* Filter card - section with icon like GrafikPage */}
-        <div className="mb-6 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
-          <div className="border-b border-zinc-100 bg-gradient-to-br from-zinc-50/80 via-white to-white px-6 py-4">
+        <div className="mb-4 sm:mb-6 overflow-hidden rounded-xl sm:rounded-2xl border border-zinc-200 bg-white shadow-sm">
+          <div className="border-b border-zinc-100 bg-gradient-to-br from-zinc-50/80 via-white to-white px-4 py-3 sm:px-6 sm:py-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -136,8 +134,8 @@ export default function HistoryPage() {
               </div>
             </div>
           </div>
-          <div className="p-6">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+          <div className="p-4 sm:p-6">
+            <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-6">
               <label className="block lg:col-span-2">
                 <span className={labelClass}>Cari (nama / no. HP)</span>
                 <input
@@ -237,8 +235,7 @@ export default function HistoryPage() {
           </div>
         ) : (
           <>
-            {/* KPI strip - same style as GrafikPage */}
-            <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="mb-4 sm:mb-6 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
               <div className="relative overflow-hidden rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:shadow-md">
                 <div className="absolute right-0 top-0 h-24 w-24 translate-x-6 -translate-y-6 rounded-full bg-emerald-100 opacity-60" />
                 <div className="relative flex items-start justify-between">
@@ -304,10 +301,9 @@ export default function HistoryPage() {
               </div>
             </div>
 
-            {/* List section header - same style as GrafikPage */}
-            <div className="mb-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
-              <div className="border-b border-zinc-100 px-6 py-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="mb-4 overflow-hidden rounded-xl sm:rounded-2xl border border-zinc-200 bg-white shadow-sm">
+              <div className="border-b border-zinc-100 px-4 py-3 sm:px-6 sm:py-4">
+                <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -324,8 +320,8 @@ export default function HistoryPage() {
                   </span>
                 </div>
               </div>
-              <div className="p-6">
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="p-4 sm:p-6">
+                <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                   {history.content.map((row) => (
                     <div
                       key={row.id}
@@ -387,8 +383,8 @@ export default function HistoryPage() {
             </div>
 
             {history.totalPages > 1 && (
-              <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-zinc-200 bg-white px-6 py-4 shadow-sm">
-                <p className="text-sm text-zinc-600">
+              <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 rounded-xl sm:rounded-2xl border border-zinc-200 bg-white px-4 py-3 sm:px-6 sm:py-4 shadow-sm">
+                <p className="text-xs sm:text-sm text-zinc-600">
                   Menampilkan <span className="font-semibold">{history.content.length}</span> dari{' '}
                   <span className="font-semibold">{history.totalElements}</span> transaksi · Halaman{' '}
                   <span className="font-semibold">{history.number + 1}</span> dari{' '}

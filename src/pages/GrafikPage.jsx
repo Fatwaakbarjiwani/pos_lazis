@@ -38,7 +38,7 @@ export default function GrafikPage() {
   if (loadingDashboard) {
     return (
       <main className="flex min-h-0 flex-1 flex-col overflow-auto bg-zinc-50 pt-6">
-        <div className="mx-auto w-full pr-[8%] pl-[4%]">
+        <div className="mx-auto w-full px-4 sm:pr-[8%] sm:pl-[4%]">
           <div className="mb-8 flex flex-col gap-2">
             <div className="h-9 w-20 animate-pulse rounded-lg bg-zinc-200" />
             <div className="h-4 w-48 animate-pulse rounded bg-zinc-200" />
@@ -58,7 +58,7 @@ export default function GrafikPage() {
   if (errorDashboard) {
     return (
       <main className="flex min-h-0 flex-1 flex-col overflow-auto bg-zinc-50 pt-6">
-        <div className="mx-auto w-full pr-[8%] pl-[4%]">
+        <div className="mx-auto w-full px-4 sm:pr-[8%] sm:pl-[4%]">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-zinc-900">Grafik & Laporan</h1>
             <p className="mt-2 text-sm text-zinc-500">Ringkasan donasi dan statistik</p>
@@ -103,23 +103,23 @@ export default function GrafikPage() {
 
   return (
     <main className="flex min-h-0 flex-1 flex-col overflow-auto bg-zinc-50 pt-6">
-      <div className="mx-auto w-full pr-[8%] pl-[4%]">
+      <div className="mx-auto w-full px-4 sm:pr-[8%] sm:pl-[4%]">
         {/* Hero header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 text-sm font-medium text-emerald-600">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-emerald-600">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
             <span>Laporan & Analitik</span>
           </div>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-zinc-900">Grafik & Statistik Donasi</h1>
-          <p className="mt-2 max-w-xl text-sm text-zinc-500">
+          <h1 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">Grafik & Statistik Donasi</h1>
+          <p className="mt-2 max-w-xl text-xs sm:text-sm text-zinc-500">
             Ringkasan donasi per kategori, metode pembayaran, dan pencapaian target. Data diperbarui dari dashboard.
           </p>
         </div>
 
         {/* KPI cards - 4 columns */}
-        <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mb-4 sm:mb-6 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
           <div className="group relative overflow-hidden rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:shadow-md">
             <div className="absolute right-0 top-0 h-24 w-24 translate-x-6 -translate-y-6 rounded-full bg-emerald-100 opacity-60" />
             <div className="relative flex items-start justify-between">
@@ -189,10 +189,10 @@ export default function GrafikPage() {
 
         {/* Target progress - full width */}
         {targetSummary && (
-          <div className="mb-6 overflow-hidden rounded-2xl border border-emerald-200 bg-white shadow-sm">
-            <div className="grid gap-6 bg-gradient-to-br from-emerald-50 via-white to-white p-6 sm:grid-cols-[auto_1fr_auto]">
-              <div className="flex items-center gap-4">
-                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-emerald-500 text-2xl font-bold text-white shadow-lg shadow-emerald-500/30">
+          <div className="mb-4 sm:mb-6 overflow-hidden rounded-xl sm:rounded-2xl border border-emerald-200 bg-white shadow-sm">
+            <div className="grid gap-4 sm:gap-6 bg-gradient-to-br from-emerald-50 via-white to-white p-4 sm:p-6 sm:grid-cols-[auto_1fr_auto]">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-emerald-500 text-xl sm:text-2xl font-bold text-white shadow-lg shadow-emerald-500/30">
                   {targetPct.toFixed(0)}%
                 </div>
                 <div>
@@ -224,7 +224,7 @@ export default function GrafikPage() {
         )}
 
         {/* Charts grid */}
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-3">
           {/* Nominal per kategori */}
           <div className="rounded-2xl border border-zinc-200 bg-white shadow-sm lg:col-span-2">
             <div className="border-b border-zinc-100 px-6 py-4">
@@ -403,7 +403,7 @@ export default function GrafikPage() {
                 <p className="mt-4 text-sm font-medium text-zinc-600">Belum ada data event</p>
               </div>
             ) : eventSummary.length <= 6 ? (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {eventSummary.map((row, i) => {
                   const pct = totalNominalAll > 0 ? ((Number(row.totalNominal) / totalNominalAll) * 100).toFixed(0) : '0'
                   return (

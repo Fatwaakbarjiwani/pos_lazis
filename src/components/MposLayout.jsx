@@ -57,13 +57,14 @@ function MenuIcon({ icon, active }) {
 }
 
 export default function MposLayout() {
-  const [sidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [notificationOpen, setNotificationOpen] = useState(false)
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { user } = useSelector((state) => state.auth)
   const { tempTransactions } = useSelector((state) => state.pos)
   const notificationRef = useRef(null)
+  const sidebarRef = useRef(null)
 
   useEffect(() => {
     dispatch(getTempTransactions())
@@ -78,14 +79,20 @@ export default function MposLayout() {
       if (notificationRef.current && !notificationRef.current.contains(event.target)) {
         setNotificationOpen(false)
       }
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target) && sidebarOpen) {
+        const menuButton = document.querySelector('[data-mobile-menu-button]')
+        if (menuButton && !menuButton.contains(event.target)) {
+          setSidebarOpen(false)
+        }
+      }
     }
-    if (notificationOpen) {
+    if (notificationOpen || sidebarOpen) {
       document.addEventListener('mousedown', handleClickOutside)
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [notificationOpen])
+  }, [notificationOpen, sidebarOpen])
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -119,13 +126,23 @@ export default function MposLayout() {
   const pendingCount = tempTransactions?.length || 0
 
   return (
-    <SidebarContext.Provider value={{ sidebarOpen }}>
+    <SidebarContext.Provider value={{ sidebarOpen: true }}>
       <div className="flex h-screen flex-col bg-zinc-50 text-zinc-900">
         <header className="sticky top-0 z-30 w-full border-b border-zinc-200 bg-white">
-          <div className="mx-auto flex items-center justify-between px-[8%] py-3">
-            <div className="flex items-center gap-3">
+          <div className="mx-auto flex items-center justify-between px-4 sm:px-[8%] py-2 sm:py-3">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <button
+                data-mobile-menu-button
+                type="button"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="sm:hidden rounded-lg p-1.5 text-zinc-600 transition hover:bg-zinc-100 hover:text-zinc-900"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
               <div className="relative">
-                <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-[3px] border-emerald-500 bg-white">
+                <div className="relative flex h-8 w-8 sm:h-8 sm:w-8 items-center justify-center overflow-hidden rounded-full border-[3px] border-emerald-500 bg-white">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
@@ -133,38 +150,38 @@ export default function MposLayout() {
                 <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500" />
               </div>
               <div className="flex flex-col">
-                <span className="text-xs font-medium leading-tight text-zinc-500">Assalamu&apos;alaikum,</span>
-                <span className="text-sm font-bold uppercase leading-tight tracking-tight text-zinc-900">{userDisplayName}</span>
+                <span className="text-[10px] sm:text-xs font-medium leading-tight text-zinc-500">Assalamu&apos;alaikum,</span>
+                <span className="text-xs sm:text-sm font-bold uppercase leading-tight tracking-tight text-zinc-900 truncate max-w-[120px] sm:max-w-none">{userDisplayName}</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
-              <button className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-2 shadow-sm transition hover:bg-zinc-100">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <button className="hidden sm:flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 sm:px-4 py-1.5 sm:py-2 shadow-sm transition hover:bg-zinc-100">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span className="text-sm font-bold uppercase tracking-tight text-zinc-800">LAZIS SULTAN AGUNG</span>
+                <span className="text-xs sm:text-sm font-bold uppercase tracking-tight text-zinc-800">LAZIS SULTAN AGUNG</span>
               </button>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <div className="relative" ref={notificationRef}>
                   <button
                     type="button"
                     onClick={handleNotificationClick}
-                    className="relative rounded-full p-2 text-zinc-600 transition hover:bg-zinc-100 hover:text-zinc-900"
+                    className="relative rounded-full p-1.5 sm:p-2 text-zinc-600 transition hover:bg-zinc-100 hover:text-zinc-900"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                     </svg>
                     {pendingCount > 0 && (
-                      <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold leading-none text-white">
+                      <span className="absolute -right-0.5 -top-0.5 flex h-3.5 sm:h-4 min-w-3.5 sm:min-w-4 items-center justify-center rounded-full bg-red-500 px-0.5 sm:px-1 text-[9px] sm:text-[10px] font-bold leading-none text-white">
                         {pendingCount > 9 ? '9+' : pendingCount}
                       </span>
                     )}
                   </button>
                   {notificationOpen && (
-                    <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-xl border border-zinc-200 bg-white shadow-lg">
+                    <div className="absolute right-0 top-full z-50 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-sm rounded-xl border border-zinc-200 bg-white shadow-lg">
                       <div className="border-b border-zinc-100 px-4 py-3">
                         <div className="flex items-center justify-between">
                           <h3 className="text-sm font-bold text-zinc-900">Notifikasi</h3>
@@ -226,11 +243,6 @@ export default function MposLayout() {
                     </div>
                   )}
                 </div>
-                <button type="button" className="rounded-full p-2 text-zinc-600 transition hover:bg-zinc-100 hover:text-zinc-900">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                </button>
               </div>
             </div>
           </div>
@@ -238,18 +250,31 @@ export default function MposLayout() {
 
 
 
-        <div className="flex min-h-0 flex-1">
-          <div className="flex w-20 shrink-0 items-center justify-center py-8 pl-2">
-            <aside className="flex flex-col rounded-r-3xl bg-zinc-800 py-4 shadow-lg">
-              <nav className="flex flex-col items-center gap-1 px-2">
+        <div className="flex min-h-0 flex-1 relative">
+          {/* Mobile Sidebar Overlay */}
+          {sidebarOpen && (
+            <div className="fixed inset-0 z-40 bg-black/50 sm:hidden" onClick={() => setSidebarOpen(false)} />
+          )}
+          
+          {/* Sidebar */}
+          <div
+            ref={sidebarRef}
+            className={`fixed sm:relative inset-y-0 left-0 z-50 sm:z-auto w-[40%] sm:w-20 transform transition-transform duration-300 ease-in-out ${
+              sidebarOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'
+            }`}
+          >
+            <div className="flex h-full w-full items-center justify-center py-8 pl-2 sm:justify-center">
+              <aside className="flex w-full sm:w-auto flex-col rounded-r-3xl bg-zinc-800 py-4 shadow-lg">
+              <nav className="flex flex-col items-start sm:items-center gap-1 px-2 sm:px-2">
                 {MENU_ITEMS.map((item) => (
                   <NavLink
                     key={item.path}
                     to={item.path}
                     end={item.path === '/home'}
+                    onClick={() => setSidebarOpen(false)}
                     className={({ isActive }) =>
                       [
-                        'relative flex w-full px-1 flex-col items-center justify-center gap-1.5 rounded-r-xl py-2.5 text-center transition-all',
+                        'relative flex w-full px-3 sm:px-1 sm:flex-col items-center gap-3 sm:gap-1.5 rounded-r-xl py-2.5 sm:text-center transition-all',
                         isActive
                           ? 'bg-emerald-50 text-emerald-600'
                           : 'text-white hover:bg-zinc-700',
@@ -259,10 +284,10 @@ export default function MposLayout() {
                     {({ isActive }) => (
                       <>
                         {isActive && (
-                          <div className="absolute left-0 top-0 h-full w-1  bg-emerald-500" />
+                          <div className="absolute left-0 top-0 h-full w-1 bg-emerald-500" />
                         )}
                         <MenuIcon icon={item.icon} active={isActive} />
-                        <span className="text-[10px] font-medium uppercase tracking-wide">{item.label}</span>
+                        <span className="text-sm sm:text-[10px] font-medium uppercase tracking-wide">{item.label}</span>
                       </>
                     )}
                   </NavLink>
@@ -273,15 +298,16 @@ export default function MposLayout() {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="flex w-full flex-col items-center gap-1.5 rounded-xl py-2.5 text-white hover:bg-zinc-700"
+                  className="flex w-full flex-row sm:flex-col items-center justify-start sm:justify-center gap-3 sm:gap-1.5 rounded-xl py-2.5 text-white hover:bg-zinc-700"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                   </svg>
-                  <span className="text-[10px] font-medium">Keluar</span>
+                  <span className="text-sm sm:text-[10px] font-medium">Keluar</span>
                 </button>
               </div>
             </aside>
+            </div>
           </div>
 
           <div className="min-h-0 min-w-0 flex-1 overflow-auto">
