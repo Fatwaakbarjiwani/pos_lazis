@@ -102,7 +102,7 @@ export const createTransaction = (formData) => async (dispatch) => {
     fd.append('categoryType', formData.categoryType)
     fd.append('categoryId', formData.categoryId || '')
     fd.append('amount', formData.amount.trim() || '0')
-    fd.append('paymentMethod', formData.paymentMethod)
+    fd.append('paymentMethod', (formData.paymentMethod || 'TUNAI').toString().toUpperCase().trim())
     fd.append('eventId', formData.eventId || '')
     if (formData.image) fd.append('image', formData.image)
 

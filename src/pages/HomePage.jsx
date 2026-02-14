@@ -12,9 +12,9 @@ const CATEGORY_TYPES = [
 ]
 
 const PAYMENT_METHODS = [
-  { value: 'tunai', label: 'Tunai' },
-  { value: 'transfer', label: 'Transfer' },
-  { value: 'qris', label: 'QRIS' },
+  { value: 'TUNAI', label: 'Tunai' },
+  { value: 'TRANSFER', label: 'Transfer' },
+  { value: 'QRIS AGEN', label: 'QRIS AGEN' },
 ]
 
 const QUICK_AMOUNTS = [50000, 100000, 200000, 500000, 1000000]
@@ -86,7 +86,7 @@ export default function HomePage() {
     categoryType: 'campaign',
     categoryId: '',
     amount: '',
-    paymentMethod: 'tunai',
+    paymentMethod: 'TUNAI',
     eventId: '',
     image: null,
   })
@@ -101,7 +101,7 @@ export default function HomePage() {
       endDate: today.toISOString().slice(0, 10),
       category: '',
       eventId: '',
-      paymentMethod: '',
+      paymentMethod: 'TUNAI',
       search: '',
       page: 0,
     }))
@@ -298,7 +298,7 @@ export default function HomePage() {
                 <p className="mt-1 text-xl font-bold text-white">
                   Terima kasih, donasi berhasil disimpan.
                 </p>
-                {(form.paymentMethod === 'transfer' || form.paymentMethod === 'qris') && (
+                {(form.paymentMethod === 'TRANSFER' || form.paymentMethod === 'QRIS AGEN') && (
                   <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-amber-100 px-4 py-1.5 shadow-sm">
                     <svg className="h-4 w-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -695,9 +695,9 @@ export default function HomePage() {
                         {PAYMENT_METHODS.map((opt) => {
                           const active = form.paymentMethod === opt.value
                           const descriptions = {
-                            tunai: 'Terima tunai langsung dari donatur',
-                            transfer: 'Verifikasi manual diperlukan',
-                            qris: 'Scan QR untuk transfer instan'
+                            TUNAI: 'Terima tunai langsung',
+                            TRANSFER: 'Verifikasi manual',
+                            'QRIS AGEN': 'Scan QR transfer instan'
                           }
                           return (
                             <button
@@ -714,17 +714,17 @@ export default function HomePage() {
                                 </span>
                               )}
                               <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${active ? 'bg-zinc-100' : 'bg-zinc-100'}`}>
-                                {opt.value === 'tunai' && (
+                                {opt.value === 'TUNAI' && (
                                   <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${active ? 'text-emerald-500' : 'text-zinc-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                                   </svg>
                                 )}
-                                {opt.value === 'transfer' && (
+                                {opt.value === 'TRANSFER' && (
                                   <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${active ? 'text-emerald-500' : 'text-zinc-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                   </svg>
                                 )}
-                                {opt.value === 'qris' && (
+                                {opt.value === 'QRIS AGEN' && (
                                   <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${active ? 'text-emerald-500' : 'text-zinc-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
                                   </svg>
@@ -740,7 +740,7 @@ export default function HomePage() {
                       </div>
                     </div>
                     
-                    {form.paymentMethod !== 'tunai' && (
+                    {form.paymentMethod !== 'TUNAI' && (
                       <div>
                         <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-zinc-800">Bukti bayar</span>
                         <input
