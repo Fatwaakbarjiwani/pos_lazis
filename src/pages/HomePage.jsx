@@ -142,12 +142,10 @@ export default function HomePage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    
     if (!form.eventId) {
       setError('Event ID harus diisi')
       return
     }
-    
     const result = await dispatch(createTransaction(form))
     if (result.success) {
       setForm((prev) => ({
@@ -235,24 +233,49 @@ export default function HomePage() {
     setOldDonorSearch('')
   }
 
-  const steps = [
-    { id: 'profile', label: 'Donatur', phase: 'profile' },
-    { id: 'event', label: 'Event & Kategori', phase: 'event' },
-    { id: 'done', label: 'Pembayaran', phase: 'done' },
-  ]
-  const currentStepIndex = Math.max(0, steps.findIndex((s) => s.phase === profilePhase))
+  const eventStepComplete = !!(form.eventId && form.categoryType) && (!(categories?.length) || !!form.categoryId)
+  const profileStepComplete = !!(String(form.name || '').trim() && String(form.phoneNumber || '').trim())
+  // Cari donatur & Tambah donatur: menu hanya Donatur → Pembayaran (Event & Kategori hanya untuk tambah donatur, lewat tombol Next)
+  const steps = profileSource === 'new' || profileSource === 'search'
+    ? [
+        { id: 'profile', label: 'Donatur', phase: 'profile' },
+        { id: 'done', label: 'Pembayaran', phase: 'done' },
+      ]
+    : [
+        { id: 'profile', label: 'Donatur', phase: 'profile' },
+        { id: 'event', label: 'Event & Kategori', phase: 'event' },
+        { id: 'done', label: 'Pembayaran', phase: 'done' },
+      ]
+  const currentStepIndex = profileSource === 'new' || profileSource === 'search'
+    ? (profilePhase === 'profile' ? 0 : 1)
+    : Math.max(0, steps.findIndex((s) => s.phase === profilePhase))
   const canGoToStep = (index) => {
+    if (profileSource === 'new') {
+      if (index === 0) return true
+      if (index === 1) return (profilePhase === 'event' || profilePhase === 'done') && eventStepComplete
+      return false
+    }
+    if (profileSource === 'search') {
+      if (index === 0) return true
+      if (index === 1) return (profilePhase === 'profile' || profilePhase === 'done') && eventStepComplete
+      return false
+    }
     if (index <= currentStepIndex) return true
-    if (index === 1) return profilePhase === 'profile'
-    // Pembayaran hanya bisa diklik jika Event & Kategori (termasuk sub kategori jika ada) sudah diisi
-    const eventStepComplete = !!(form.eventId && form.categoryType) && (!(categories?.length) || !!form.categoryId)
+    if (index === 1) return profilePhase === 'profile' && profileStepComplete
     if (index === 2) return (profilePhase === 'event' || profilePhase === 'done') && eventStepComplete
     return false
   }
-  // Step hijau (selesai) ketika input step tersebut sudah lengkap. Event & Kategori: wajib sub kategori jika daftar sub kategori ada.
   const isStepComplete = (index) => {
-    if (index === 0) return !!(form.name && form.phoneNumber)
-    if (index === 1) return !!(form.eventId && form.categoryType) && (!(categories?.length) || !!form.categoryId)
+    if (index === 0) return profileSource === 'search' ? true : profileStepComplete
+    if (profileSource === 'new') {
+      if (index === 1) return profilePhase === 'done' || eventStepComplete
+      return false
+    }
+    if (profileSource === 'search') {
+      if (index === 1) return profilePhase === 'done' || eventStepComplete
+      return false
+    }
+    if (index === 1) return eventStepComplete
     if (index === 2) return profilePhase === 'done'
     return false
   }
@@ -555,8 +578,16 @@ export default function HomePage() {
                         </div>
                       )}
                       {profileSource === 'new' && (
-                        <div className="flex gap-3">
+                        <div className="flex flex-wrap items-center gap-3">
                           <button type="button" onClick={handleGantiDonatur} className="rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-600 shadow-sm transition hover:bg-zinc-50">Ganti</button>
+                          <button
+                            type="button"
+                            onClick={() => setProfilePhase('event')}
+                            disabled={!profileStepComplete}
+                            className="rounded-xl bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            Next
+                          </button>
                         </div>
                       )}
                     </div>
@@ -584,8 +615,8 @@ export default function HomePage() {
                     </div>
                     )}
 
-                    {/* Event + Catatan + Tipe donasi + Sub kategori */}
-                    {(profilePhase === 'idle' || (profilePhase === 'profile' && profileSource === 'search') || profilePhase === 'event') && (
+                    {/* Event + Catatan + Tipe donasi + Sub kategori (cari donatur: di bawah search / kartu donatur; tambah donatur: setelah Next) */}
+                    {(profilePhase === 'idle' || profilePhase === 'event' || (profilePhase === 'profile' && profileSource === 'search')) && (
                     <div className="space-y-6">
                       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <label className="block">

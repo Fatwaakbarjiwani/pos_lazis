@@ -130,21 +130,18 @@ export const clearTransactionSuccess = () => (dispatch) => {
   dispatch({ type: CLEAR_TRANSACTION_SUCCESS })
 }
 
-// Search donors (donatur lama) via history API - returns list without updating history state
+// Search donors (donatur lama) via /api/pos/search-donatur
 export const searchDonors = (search) => async (dispatch, getState) => {
   if (!search || !String(search).trim()) return { success: true, content: [] }
   try {
     const token = getToken()
-    const params = new URLSearchParams()
-    params.set('search', String(search).trim())
-    params.set('page', '0')
-    params.set('size', '20')
-    const res = await fetch(`${baseUrl}/api/pos/history?${params}`, {
+    const params = new URLSearchParams({ search: String(search).trim() })
+    const res = await fetch(`${baseUrl}/api/pos/search-donatur?${params}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     })
     const data = await res.json()
     if (!res.ok) throw new Error(data?.message || 'Gagal mencari donatur')
-    const content = Array.isArray(data.content) ? data.content : []
+    const content = Array.isArray(data.content) ? data.content : (Array.isArray(data) ? data : [])
     return { success: true, content }
   } catch (error) {
     return { success: false, error: error.message, content: [] }

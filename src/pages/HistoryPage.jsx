@@ -135,7 +135,7 @@ export default function HistoryPage() {
             </div>
           </div>
           <div className="p-4 sm:p-6">
-            <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <label className="block lg:col-span-2">
                 <span className={labelClass}>Cari (nama / no. HP)</span>
                 <input
