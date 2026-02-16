@@ -187,6 +187,42 @@ export const getHistory = (filters) => async (dispatch) => {
   }
 }
 
+// Download History Recap (API mengembalikan JSON array → frontend konversi ke CSV)
+export const downloadHistoryRecap = (filters) => async () => {
+  try {
+    const token = getToken()
+    const params = new URLSearchParams()
+    if (filters.startDate) params.set('startDate', filters.startDate)
+    if (filters.endDate) params.set('endDate', filters.endDate)
+    if (filters.category) params.set('category', filters.category)
+    if (filters.eventId) params.set('eventId', filters.eventId)
+    if (filters.paymentMethod) params.set('paymentMethod', filters.paymentMethod)
+    if (filters.search && String(filters.search).trim()) params.set('search', String(filters.search).trim())
+    params.set('page', String(filters.page ?? 0))
+
+    const res = await fetch(`${baseUrl}/api/pos/history-recap?${params}`, {
+      method: 'GET',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+
+    if (!res.ok) {
+      const text = await res.text()
+      let message = 'Gagal mengunduh recap'
+      try {
+        const data = JSON.parse(text)
+        message = data?.message || data?.error || message
+      } catch (_) {}
+      throw new Error(message)
+    }
+
+    const data = await res.json()
+    const list = Array.isArray(data) ? data : (Array.isArray(data?.content) ? data.content : [])
+    return { data: list }
+  } catch (error) {
+    return { success: false, error: error.message }
+  }
+}
+
 // Get Temp Transactions
 export const getTempTransactions = () => async (dispatch) => {
   dispatch({ type: GET_TEMP_TRANSACTIONS_REQUEST })

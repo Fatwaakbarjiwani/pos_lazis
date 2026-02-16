@@ -68,10 +68,6 @@ export default function MposLayout() {
 
   useEffect(() => {
     dispatch(getTempTransactions())
-    const interval = setInterval(() => {
-      dispatch(getTempTransactions())
-    }, 30000)
-    return () => clearInterval(interval)
   }, [dispatch])
 
   useEffect(() => {

@@ -75,6 +75,15 @@ export default function HomePage() {
   const [loadingDonorSearch, setLoadingDonorSearch] = useState(false)
   const [profilePhase, setProfilePhase] = useState('idle') // 'idle' | 'profile' | 'event' | 'done'
   const [profileSource, setProfileSource] = useState(null) // null | 'search' | 'new'
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 1024)
+
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 1023px)')
+    const handle = () => setIsMobile(mql.matches)
+    mql.addEventListener('change', handle)
+    handle()
+    return () => mql.removeEventListener('change', handle)
+  }, [])
 
   const [form, setForm] = useState({
     name: '',
@@ -415,8 +424,8 @@ export default function HomePage() {
                     <div className="flex flex-wrap items-center gap-3 min-w-0">
                       <div className="h-8 w-1 shrink-0 rounded-r-full bg-emerald-500" aria-hidden />
                       <h2 className="text-xl font-bold tracking-tight text-zinc-900">New Donation Transaction</h2>
-                      {/* Stepper di sebelah judul */}
-                      {!transactionSuccess && profilePhase !== 'idle' && (
+                      {/* Stepper: sembunyikan di mobile (form lengkap 1 halaman) */}
+                      {!transactionSuccess && profilePhase !== 'idle' && !isMobile && (
                         <div className="flex items-center gap-2 ml-2">
                           {steps.map((step, index) => {
                             const isActive = profilePhase === step.phase
@@ -460,8 +469,8 @@ export default function HomePage() {
                     onSubmit={handleSubmit}
                     className="space-y-6"
                   >
-                    {/* Fase 1: Idle - search + Cari + Tambah */}
-                    {profilePhase === 'idle' && (
+                    {/* Fase 1: Idle - search + Cari + Tambah (mobile: selalu tampil) */}
+                    {(profilePhase === 'idle' || isMobile) && (
                     <div className="relative">
                       <p className="mb-3 text-xs font-bold uppercase tracking-wider text-zinc-800">Cari donatur</p>
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
@@ -529,8 +538,8 @@ export default function HomePage() {
                     </div>
                     )}
 
-                    {/* Fase 2: Profile - donatur dari search: tampil ringkasan saja. Donatur baru: form profil saja */}
-                    {profilePhase === 'profile' && (
+                    {/* Fase 2: Profile - donatur dari search / form donatur baru (mobile: tampil jika sudah ada donatur) */}
+                    {(profilePhase === 'profile' || (isMobile && (profileSource || form.name))) && (
                     <div className="space-y-4">
                       {profileSource === 'search' ? (
                         <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-zinc-200 bg-white px-5 py-4 shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
@@ -550,9 +559,11 @@ export default function HomePage() {
                               {form.address && <p className="text-xs text-zinc-500">{form.address}</p>}
                             </div>
                           </div>
+                          {!isMobile && (
                           <div className="flex shrink-0 gap-2">
                             <button type="button" onClick={handleGantiDonatur} className="rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm font-bold text-zinc-700 shadow-sm transition hover:border-zinc-300 hover:bg-zinc-50">Ganti</button>
                           </div>
+                          )}
                         </div>
                       ) : (
                         <div className="space-y-5">
@@ -577,7 +588,7 @@ export default function HomePage() {
                           </div>
                         </div>
                       )}
-                      {profileSource === 'new' && (
+                      {profileSource === 'new' && !isMobile && (
                         <div className="flex flex-wrap items-center gap-3">
                           <button type="button" onClick={handleGantiDonatur} className="rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-600 shadow-sm transition hover:bg-zinc-50">Ganti</button>
                           <button
@@ -593,8 +604,8 @@ export default function HomePage() {
                     </div>
                     )}
 
-                    {/* Fase Event: donatur baru sudah diisi, isi event & kategori (card seperti referensi) */}
-                    {profilePhase === 'event' && (
+                    {/* Fase Event: kartu donatur (hanya desktop; mobile pakai form lengkap) */}
+                    {profilePhase === 'event' && !isMobile && (
                     <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-zinc-200 bg-white px-5 py-4 shadow-sm">
                       <div className="flex min-w-0 flex-1 items-center gap-3">
                         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-teal-50">
@@ -615,8 +626,8 @@ export default function HomePage() {
                     </div>
                     )}
 
-                    {/* Event + Catatan + Tipe donasi + Sub kategori (cari donatur: di bawah search / kartu donatur; tambah donatur: setelah Next) */}
-                    {(profilePhase === 'idle' || profilePhase === 'event' || (profilePhase === 'profile' && profileSource === 'search')) && (
+                    {/* Event + Catatan + Tipe donasi + Sub kategori (mobile: selalu tampil) */}
+                    {(profilePhase === 'idle' || profilePhase === 'event' || (profilePhase === 'profile' && profileSource === 'search') || isMobile) && (
                     <div className="space-y-6">
                       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <label className="block">
@@ -666,9 +677,10 @@ export default function HomePage() {
                     </div>
                     )}
 
-                    {/* Fase Done: kartu donatur lengkap (nama, no HP, email, alamat) seperti referensi */}
-                    {profilePhase === 'done' && (
+                    {/* Fase Done: kartu donatur + pembayaran + nominal + submit (mobile: selalu tampil) */}
+                    {(profilePhase === 'done' || isMobile) && (
                     <>
+                    {!isMobile && (
                     <div className="flex items-center justify-between gap-4 rounded-xl border border-zinc-200 bg-white px-5 py-4 shadow-sm">
                       <div className="flex min-w-0 flex-1 items-center gap-3">
                         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-teal-50">
@@ -687,6 +699,7 @@ export default function HomePage() {
                       </div>
                       <button type="button" onClick={handleGantiDonatur} className="shrink-0 rounded-lg border border-zinc-200 bg-zinc-100 px-4 py-2 text-sm font-bold text-zinc-900 shadow-sm transition hover:bg-zinc-200">Ganti</button>
                     </div>
+                    )}
 
                     {/* Payment + Nominal + Process Transaction */}
                     <div>

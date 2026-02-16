@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { printReceipt } from '../utils/printReceipt'
-import { getEvents, getHistory } from '../redux/actions/posActions'
+import { getEvents, getHistory, downloadHistoryRecap } from '../redux/actions/posActions'
 
 const CATEGORY_OPTIONS = [
   { value: '', label: 'Semua' },
@@ -82,12 +82,18 @@ export default function HistoryPage() {
     search: '',
     page: 0,
   })
+  const lastFiltersRef = useRef(null)
+  const [downloading, setDownloading] = useState(false)
+  const [downloadError, setDownloadError] = useState('')
 
   useEffect(() => {
     dispatch(getEvents())
   }, [dispatch])
 
   useEffect(() => {
+    const key = `${filters.startDate}|${filters.endDate}|${filters.category}|${filters.eventId}|${filters.paymentMethod}|${filters.search}|${filters.page}`
+    if (lastFiltersRef.current === key) return
+    lastFiltersRef.current = key
     dispatch(getHistory(filters))
   }, [dispatch, filters])
 
@@ -96,6 +102,70 @@ export default function HistoryPage() {
       ...prev,
       ...(key === 'page' ? { page: value } : { [key]: value, page: 0 }),
     }))
+  }
+
+  const RECAP_HEADERS = {
+    id: 'No',
+    tanggal: 'Tanggal',
+    nomorBukti: 'No. Bukti',
+    nama: 'Nama',
+    noHp: 'No. HP',
+    email: 'Email',
+    alamat: 'Alamat',
+    kategori: 'Kategori',
+    subKategori: 'Sub Kategori',
+    nominal: 'Nominal',
+    metodePembayaran: 'Metode Pembayaran',
+    paymentProofImage: 'Bukti Bayar (file)',
+    namaEvent: 'Nama Event',
+    lokasiEvent: 'Lokasi Event',
+  }
+
+  const jsonToCsv = (arr) => {
+    if (!arr.length) return ''
+    const sep = ';'
+    const escape = (v) => {
+      const s = String(v ?? '').trim()
+      if (s.includes(sep) || s.includes('"') || s.includes('\n') || s.includes('\r')) return `"${s.replace(/"/g, '""')}"`
+      return s
+    }
+    const keys = Object.keys(arr[0])
+    const headerLabels = keys.map((k) => escape(RECAP_HEADERS[k] ?? k))
+    const header = headerLabels.join(sep)
+    const rows = arr.map((row) => keys.map((k) => escape(row[k])).join(sep))
+    return [header, ...rows].join('\r\n')
+  }
+
+  const handleDownloadRecap = async () => {
+    setDownloadError('')
+    setDownloading(true)
+    try {
+      const result = await dispatch(downloadHistoryRecap(filters))
+      if (result?.error) {
+        setDownloadError(result.error)
+        return
+      }
+      const list = result?.data
+      if (!Array.isArray(list)) {
+        setDownloadError('Data recap tidak valid')
+        return
+      }
+      const csv = jsonToCsv(list)
+      const bom = '\uFEFF'
+      const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'history-recap.csv'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      setDownloadError(err?.message || 'Gagal mengunduh recap')
+    } finally {
+      setDownloading(false)
+    }
   }
 
   const inputClass =
@@ -211,6 +281,32 @@ export default function HistoryPage() {
                   ))}
                 </select>
               </label>
+            </div>
+            {downloadError && (
+              <p className="mt-3 text-sm text-red-600" role="alert">{downloadError}</p>
+            )}
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={handleDownloadRecap}
+                disabled={downloading}
+                className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700 transition hover:bg-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {downloading ? (
+                  <>
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+                    Mengunduh...
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Download recap
+                  </>
+                )}
+              </button>
+              <p className="text-xs text-zinc-500">Export sesuai filter periode, event & pembayaran</p>
             </div>
           </div>
         </div>
