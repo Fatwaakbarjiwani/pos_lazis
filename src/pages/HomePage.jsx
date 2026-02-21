@@ -824,7 +824,7 @@ export default function HomePage() {
               {/* Kolom 4: Type Distribution ke bawah + Ongoing + Recent */}
               <div className="flex min-w-0 flex-col gap-4 lg:col-span-1">
                 <TypeDistribution categoryNominal={dashboard?.categoryNominalSummary} />
-                <OngoingCampaigns eventSummary={dashboard?.eventSummary} />
+                <OngoingCampaigns />
                 <RecentActivity historyContent={
                   history?.content?.slice(0, 3).map((item) => {
                     const kategoriLower = (item.kategori || '').toLowerCase()

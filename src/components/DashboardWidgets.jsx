@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 function formatRupiah(n) {
   return new Intl.NumberFormat('id-ID', { style: 'decimal', maximumFractionDigits: 0 }).format(Number(n))
@@ -84,11 +84,44 @@ export function TypeDistribution({ categoryNominal }) {
   )
 }
 
-export function OngoingCampaigns({ eventSummary }) {
-  const list = eventSummary?.length ? eventSummary.slice(0, 2) : [
-    { eventName: 'Pembangunan Sumur Wakaf - NTB', totalNominal: 45e6, target: 100e6 },
-    { eventName: 'Emergency Relief: Palestine', totalNominal: 820e6, target: 1e9 },
-  ]
+const EMERGENCY_CAMPAIGN_API = 'https://skyconnect.lazis-sa.org/api/campaign/emergency'
+
+export function OngoingCampaigns() {
+  const [campaigns, setCampaigns] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+    async function fetchCampaigns() {
+      setLoading(true)
+      setError(null)
+      try {
+        const res = await fetch(EMERGENCY_CAMPAIGN_API)
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const data = await res.json()
+        if (!cancelled && data?.content?.length) {
+          setCampaigns(data.content)
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err.message || 'Gagal memuat campaign')
+          setCampaigns([])
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    fetchCampaigns()
+    return () => { cancelled = true }
+  }, [])
+
+  const list = campaigns.map((c) => ({
+    eventName: c.campaignName,
+    totalNominal: Number(c.currentAmount ?? 0),
+    target: Number(c.targetAmount ?? 1) || 1,
+    key: c.campaignId ?? c.displayId,
+  }))
 
   return (
     <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
@@ -97,22 +130,30 @@ export function OngoingCampaigns({ eventSummary }) {
         <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-600">Ongoing Campaigns</h2>
         <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-700">Live</span>
       </div>
-      <ul className="space-y-4">
-        {list.map((ev, i) => {
-          const total = Number(ev.totalNominal ?? 0)
-          const target = Number(ev.target ?? (total ? total * 2 : 1)) || 1
-          const pct = Math.min(100, (total / target) * 100)
-          return (
-            <li key={i}>
-              <p className="truncate text-sm font-medium text-zinc-800">{ev.eventName}</p>
-              <p className="mt-0.5 text-xs text-zinc-500">Rp {(total / 1e6).toFixed(0)}M / {(target / 1e6).toFixed(0)}M</p>
-              <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-zinc-100">
-                <div className="h-full rounded-full bg-emerald-500" style={{ width: `${pct}%` }} />
-              </div>
-            </li>
-          )
-        })}
-      </ul>
+      {loading ? (
+        <div className="py-6 text-center text-sm text-zinc-500">Memuat...</div>
+      ) : error ? (
+        <div className="py-6 text-center text-sm text-red-600">{error}</div>
+      ) : list.length === 0 ? (
+        <div className="py-6 text-center text-sm text-zinc-400">—</div>
+      ) : (
+        <ul className="max-h-36 space-y-4 overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-zinc-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300 [&::-webkit-scrollbar-thumb:hover]:bg-zinc-400">
+          {list.map((ev, i) => {
+            const total = Number(ev.totalNominal ?? 0)
+            const target = Number(ev.target ?? (total ? total * 2 : 1)) || 1
+            const pct = Math.min(100, (total / target) * 100)
+            return (
+              <li key={ev.key ?? i}>
+                <p className="truncate text-sm font-medium text-zinc-800">{ev.eventName}</p>
+                <p className="mt-0.5 text-xs text-zinc-500">Rp {(total / 1e6).toFixed(0)}M / {(target / 1e6).toFixed(0)}M</p>
+                <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-zinc-100">
+                  <div className="h-full rounded-full bg-emerald-500" style={{ width: `${pct}%` }} />
+                </div>
+              </li>
+            )
+          })}
+        </ul>
+      )}
     </div>
   )
 }
