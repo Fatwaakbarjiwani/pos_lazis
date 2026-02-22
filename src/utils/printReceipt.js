@@ -175,6 +175,12 @@ function buildThermalHtml(r) {
       word-wrap: break-word;
       margin: 0;
     }
+    .logo-img {
+      display: block;
+      margin: 0 auto 2mm;
+      max-width: 18mm;
+      height: auto;
+    }
     @media print { 
       body { 
         -webkit-print-color-adjust: exact; 
@@ -182,11 +188,13 @@ function buildThermalHtml(r) {
         margin: 0;
         padding: 4mm 3mm;
       }
+      .logo-img { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       @page { margin: 0; }
     }
   </style>
 </head>
 <body>
+<img src="/logo.png" alt="LAZIS Sultan Agung" class="logo-img" />
 <pre class="center bold">${cutText(storeName, W)}</pre>
 <pre class="center">${cutText(storeCV, W)}</pre>
 <pre class="center" style="font-size: 9px;">${cutText(storeAddr, W)}</pre>
@@ -263,211 +271,173 @@ function buildNormalHtml(r) {
   <title>BUKTI TANDA TERIMA - ${escapeHtml(r.nomorBukti)}</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    @page { size: A4; margin: 15mm; }
-    body { 
-      font-family: 'Times New Roman', serif; 
-      font-size: 11pt; 
-      line-height: 1.4; 
-      color: #000; 
-      max-width: 210mm; 
-      margin: 0 auto;
+    @page { size: A4 landscape; margin: 12mm; }
+    html, body {
+      width: 297mm;
+      min-height: 210mm;
+      font-family: 'Times New Roman', serif;
+      font-size: 10pt;
+      line-height: 1.3;
+      color: #000;
       background: white;
+      padding: 0 12mm;
+      page-break-inside: avoid;
     }
-    .header { 
-      display: grid; 
-      grid-template-columns: 1fr 1fr 1fr; 
-      gap: 8px; 
-      margin-bottom: 12px;
-      border-bottom: 1px solid #000;
-      padding-bottom: 8px;
+    .receipt-page {
+      width: 100%;
+      height: 100%;
+      page-break-inside: avoid;
     }
-    .header-left { text-align: left; }
-    .header-center { text-align: center; font-size: 9pt; }
-    .header-right { text-align: right; font-size: 9pt; }
-    .logo-text { font-size: 16pt; font-weight: bold; margin-bottom: 2px; }
-    .org-name { font-size: 10pt; margin-bottom: 4px; }
-    .address { font-size: 8pt; line-height: 1.3; }
-    .bank-section { margin-top: 4px; }
-    .bank-title { font-weight: bold; font-size: 9pt; margin-top: 4px; }
-    .bank-item { font-size: 8pt; margin-left: 8px; }
-    .contact-item { font-size: 8pt; margin-bottom: 2px; }
-    .checkbox-group { margin-top: 8px; font-size: 8pt; }
-    .checkbox-item { display: flex; align-items: center; gap: 4px; margin-bottom: 2px; }
-    .checkbox-box { width: 12px; height: 12px; border: 1px solid #000; display: inline-block; }
-    .receipt-no { 
-      margin-top: 8px; 
-      border: 1px solid #000; 
-      padding: 4px 8px; 
-      display: inline-block;
+    .kop-wrapper {
+      position: relative;
+      margin-bottom: 8px;
+    }
+    .kop-img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .receipt-no-overlay {
+      position: absolute;
+      top: 40%;
+      right: 6%;
+      font-size: 10pt;
       font-weight: bold;
     }
     .main-content {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 16px;
+      gap: 20px;
+      margin-top: 6px;
     }
-    .left-column { }
-    .right-column { }
-    .title { 
-      font-size: 14pt; 
-      font-weight: bold; 
-      text-align: center; 
+    .main-col { page-break-inside: avoid; }
+    .title {
+      font-size: 12pt;
+      font-weight: bold;
+      text-align: center;
       text-decoration: underline;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+    .bismillah {
+      font-style: italic;
+      text-align: center;
+      font-size: 8pt;
       margin-bottom: 8px;
-      letter-spacing: 1px;
     }
-    .bismillah { 
-      font-style: italic; 
-      text-align: center; 
-      font-size: 9pt; 
-      margin-bottom: 12px;
+    .field-group { margin-bottom: 6px; }
+    .field-label { font-weight: bold; margin-bottom: 1px; font-size: 9pt; }
+    .field-line {
+      border-bottom: 1px solid #000;
+      min-height: 16px;
+      padding: 1px 4px;
+      font-size: 9pt;
     }
-    .field-group { margin-bottom: 10px; }
-    .field-label { font-weight: bold; margin-bottom: 2px; }
-    .field-line { 
-      border-bottom: 1px solid #000; 
-      min-height: 18px;
-      padding-left: 4px;
+    .declaration {
+      margin-top: 8px;
+      font-size: 8pt;
+      line-height: 1.4;
     }
-    .declaration { 
-      margin-top: 12px; 
-      font-size: 9pt; 
-      line-height: 1.5;
-    }
-    .declaration-item { 
-      display: flex; 
-      gap: 6px; 
-      margin-bottom: 6px;
+    .declaration-title { font-weight: bold; margin-bottom: 4px; }
+    .declaration-item {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 4px;
       align-items: flex-start;
     }
-    .declaration-checkbox { 
-      width: 14px; 
-      height: 14px; 
-      border: 1px solid #000; 
-      margin-top: 2px;
+    .declaration-checkbox {
+      width: 12px;
+      height: 12px;
+      border: 1px solid #000;
+      margin-top: 1px;
       flex-shrink: 0;
     }
-    .prayer { 
-      margin-top: 12px; 
-      font-size: 9pt; 
-      line-height: 1.5;
+    .prayer {
+      margin-top: 6px;
+      font-size: 8pt;
+      line-height: 1.4;
       text-align: justify;
+      font-style: italic;
     }
-    .donation-title { font-weight: bold; margin-bottom: 8px; }
-    .donation-item { 
-      display: flex; 
-      justify-content: space-between; 
-      margin-bottom: 6px;
-      font-size: 10pt;
+    .donation-title { font-weight: bold; margin-bottom: 6px; font-size: 9pt; }
+    .donation-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 4px;
+      font-size: 9pt;
+      gap: 6px;
     }
-    .donation-label { }
-    .donation-line { 
-      border-bottom: 1px solid #000; 
-      flex: 1; 
-      margin: 0 8px;
-      min-height: 16px;
+    .donation-label { flex-shrink: 0; }
+    .donation-line {
+      border-bottom: 1px solid #000;
+      flex: 1;
+      min-height: 14px;
     }
-    .donation-amount { 
-      text-align: right; 
+    .donation-amount {
+      text-align: right;
       min-width: 80px;
-      padding-left: 4px;
     }
-    .total-box { 
-      border: 1px solid #000; 
-      padding: 4px 8px; 
-      margin-top: 8px;
+    .total-box {
+      border: 1px solid #000;
+      padding: 4px 8px;
+      margin-top: 6px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 6px;
     }
     .total-label { font-weight: bold; }
-    .total-line { 
-      border-bottom: 1px solid #000; 
-      flex: 1; 
-      margin: 0 8px;
-      min-height: 18px;
+    .total-line {
+      border-bottom: 1px solid #000;
+      flex: 1;
+      min-height: 16px;
     }
-    .total-amount { font-weight: bold; min-width: 100px; text-align: right; }
-    .terbilang-line { 
-      border-bottom: 1px solid #000; 
-      min-height: 18px;
-      margin-top: 8px;
-      padding-left: 4px;
+    .total-amount { font-weight: bold; min-width: 95px; text-align: right; }
+    .terbilang-group { margin-top: 6px; }
+    .terbilang-label { font-weight: bold; margin-bottom: 2px; font-size: 9pt; }
+    .terbilang-line {
+      border-bottom: 1px solid #000;
+      min-height: 16px;
+      padding: 1px 4px;
+      font-size: 9pt;
     }
-    .footer { 
-      margin-top: 24px; 
-      display: flex; 
+    .signatures {
+      margin-top: 12px;
+      display: flex;
       justify-content: space-between;
-      gap: 40px;
+      gap: 24px;
     }
-    .signature-box { flex: 1; }
-    .signature-label { font-weight: bold; margin-bottom: 40px; }
-    .signature-line { 
-      border-bottom: 1px solid #000; 
-      min-height: 20px;
-      margin-bottom: 4px;
+    .signature-box { flex: 1; text-align: left; }
+    .signature-date { font-weight: bold; margin-bottom: 24px; font-size: 9pt; }
+    .signature-label { font-weight: bold; margin-bottom: 4px; font-size: 9pt; }
+    .signature-line {
+      border-bottom: 1px solid #000;
+      min-height: 18px;
+      margin-bottom: 2px;
     }
-    .signature-name { font-size: 9pt; }
-    @media print { 
-      body { padding: 0; }
+    .signature-name { font-size: 8pt; }
+    @media print {
+      @page { size: A4 landscape; margin: 12mm; }
+      html, body {
+        margin: 0 !important;
+        padding: 0 12mm !important;
+      }
       .no-print { display: none; }
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <div class="header-left">
-      <div class="logo-text">LAZIS</div>
-      <div class="org-name">Sultan Agung</div>
-      <div class="address">
-        Gedung Pumanisa 111 UNISSULA<br>
-        Jl. Raya Kaligawe Km. 4 Semarang<br>
-        Fax. 024-6582455 Telp. 024-6583584 Pes. 576
-      </div>
-    </div>
-    <div class="header-center">
-      <div class="bank-section">
-        <div class="bank-title">Zakat</div>
-        <div class="bank-item">Bank Jateng Syariah No. 1234567890</div>
-        <div class="bank-item">Bank Mega Syariah No. 9876543210</div>
-        <div class="bank-item">BSI No. 5555555555</div>
-      </div>
-      <div class="bank-section">
-        <div class="bank-title">Infak</div>
-        <div class="bank-item">Bank Jateng Syariah No. 1111111111</div>
-        <div class="bank-item">BSI No. 2222222222</div>
-      </div>
-      <div class="bank-section">
-        <div class="bank-title">DSKL</div>
-        <div class="bank-item">Bank Jateng Syariah No. 3333333333</div>
-      </div>
-    </div>
-    <div class="header-right">
-      <div class="contact-item">www.lazis-sa.org</div>
-      <div class="contact-item">Lazis Sultan Agung</div>
-      <div class="contact-item">Lazis Sultan Agung</div>
-      <div class="contact-item">Lazis Sultan Agung</div>
-      <div class="checkbox-group">
-        <div class="checkbox-item">
-          <span class="checkbox-box"></span>
-          <span>Lemb. Putih (Donatur)</span>
-        </div>
-        <div class="checkbox-item">
-          <span class="checkbox-box"></span>
-          <span>Lemb. Merah (Keuangan)</span>
-        </div>
-        <div class="checkbox-item">
-          <span class="checkbox-box"></span>
-          <span>Lemb. Hijau (Arsip)</span>
-        </div>
-      </div>
-      <div class="receipt-no">No. ${escapeHtml(r.nomorBukti || '—')}</div>
-    </div>
+  <div class="receipt-page">
+  <div class="kop-wrapper">
+    <img src="/kopcetakbiasa.png" alt="Kop LAZIS Sultan Agung" class="kop-img" />
+    <div class="receipt-no-overlay">No. ${escapeHtml(r.nomorBukti || '—')}</div>
   </div>
 
   <div class="main-content">
-    <div class="left-column">
+    <div class="main-col left-column">
       <div class="title">BUKTI TANDA TERIMA</div>
       <div class="bismillah">Bismillahirrahmanirrahim...</div>
       
@@ -497,6 +467,7 @@ function buildNormalHtml(r) {
       </div>
       
       <div class="declaration">
+        <div class="declaration-title">Dengan ini saya menyatakan:</div>
         <div class="declaration-item">
           <div class="declaration-checkbox"></div>
           <div>Harta yang ditunaikan bukan berasal dari dana pencucian uang, hasil korupsi, tindak kriminal atau dana non halal</div>
@@ -508,12 +479,12 @@ function buildNormalHtml(r) {
       </div>
       
       <div class="prayer">
-        Semoga Allah memberikan pahala atas apa yang telah Anda berikan, menjadikannya suci dari mensucikan, serta Allah memberikan keberkahan atas harta Anda yang tersisa.
+        Semoga Alloh memberikan pahala atas apa yang telah Anda berikan, menjadikannya suci dan mensucikan, serta Alloh memberikan keberkahan atas harta Anda yang tersisa.
       </div>
     </div>
     
-    <div class="right-column">
-      <div class="donation-title">Digunakan Untuk Donasi:</div>
+    <div class="main-col right-column">
+      <div class="donation-title">Digunakan Untuk Donasi :</div>
       
       <div class="donation-item">
         <span class="donation-label">a. Zakat</span>
@@ -546,21 +517,9 @@ function buildNormalHtml(r) {
       </div>
       
       <div class="donation-item">
-        <span class="donation-label">f. ..........................</span>
+        <span class="donation-label">f. ...............</span>
         <span class="donation-line"></span>
         <span class="donation-amount">${lainnyaAmount > 0 ? 'Rp ' + formatRupiah(lainnyaAmount) : ''}</span>
-      </div>
-      
-      <div class="donation-item">
-        <span class="donation-label"></span>
-        <span class="donation-line"></span>
-        <span class="donation-amount"></span>
-      </div>
-      
-      <div class="donation-item">
-        <span class="donation-label"></span>
-        <span class="donation-line"></span>
-        <span class="donation-amount"></span>
       </div>
       
       <div class="total-box">
@@ -569,25 +528,27 @@ function buildNormalHtml(r) {
         <span class="total-amount">Rp ${formatRupiah(r.nominal)}</span>
       </div>
       
-      <div class="field-group">
-        <div class="field-label">Terbilang</div>
+      <div class="terbilang-group">
+        <div class="terbilang-label">Terbilang</div>
         <div class="terbilang-line">${escapeHtml(r.terbilang || '')}</div>
+      </div>
+      
+      <div class="signatures">
+        <div class="signature-box">
+          <div class="signature-date">Semarang, ${formatDate(r.tanggal)}</div>
+          <div class="signature-label">Donatur,</div>
+          <div class="signature-line"></div>
+          <div class="signature-name">(${escapeHtml(r.nama || '')})</div>
+        </div>
+        <div class="signature-box">
+          <div class="signature-date">&nbsp;</div>
+          <div class="signature-label">Penerima</div>
+          <div class="signature-line"></div>
+          <div class="signature-name">(LAZIS Sultan Agung)</div>
+        </div>
       </div>
     </div>
   </div>
-
-  <div class="footer">
-    <div class="signature-box">
-      <div class="signature-label">Semarang, ${formatDate(r.tanggal)}</div>
-      <div class="signature-label" style="margin-top: 60px;">Donatur,</div>
-      <div class="signature-line"></div>
-      <div class="signature-name">(${escapeHtml(r.nama || '')})</div>
-    </div>
-    <div class="signature-box">
-      <div class="signature-label" style="margin-top: 60px;">Penerima</div>
-      <div class="signature-line"></div>
-      <div class="signature-name">(LAZIS Sultan Agung)</div>
-    </div>
   </div>
 </body>
 </html>`
@@ -604,7 +565,7 @@ export function printReceipt(data, mode = 'normal', user = null) {
   if (!r) return
 
   const html = mode === 'thermal' ? buildThermalHtml(r) : buildNormalHtml(r)
-  const win = window.open('', '_blank', 'width=400,height=600')
+  const win = window.open('', '_blank', mode === 'thermal' ? 'width=400,height=600' : 'width=900,height=600')
   if (!win) {
     alert('Izinkan pop-up untuk mencetak.')
     return
