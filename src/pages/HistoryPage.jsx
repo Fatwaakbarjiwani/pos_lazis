@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { printReceipt } from '../utils/printReceipt'
+import { baseUrl } from '../utils/api'
 import { getEvents, getHistory, downloadHistoryRecap } from '../redux/actions/posActions'
 
 const CATEGORY_OPTIONS = [
@@ -417,11 +418,11 @@ export default function HistoryPage() {
                 </div>
               </div>
               <div className="p-4 sm:p-6">
-                <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start">
                   {history.content.map((row) => (
                     <div
                       key={row.id}
-                      className="group rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:border-emerald-300 hover:shadow-md"
+                      className="group flex flex-col rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:border-emerald-300 hover:shadow-md"
                     >
                       <div className="mb-4 flex items-start justify-between">
                         <div className="flex-1">
@@ -455,6 +456,23 @@ export default function HistoryPage() {
                           <p className="text-lg font-bold text-zinc-900">Rp {formatRupiah(row.nominal)}</p>
                         </div>
                       </div>
+
+                      {row.metodePembayaran?.toUpperCase() !== 'TUNAI' && row.paymentProofImage && (
+                        <div className="mb-4">
+                          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">Bukti Pembayaran</p>
+                          <a
+                            href={`${baseUrl}/api/images/${row.paymentProofImage}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-zinc-300 bg-zinc-50 py-3 text-sm font-medium text-zinc-600 transition hover:border-emerald-400 hover:bg-emerald-50/50 hover:text-emerald-700"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Lihat bukti pembayaran
+                          </a>
+                        </div>
+                      )}
 
                       <div className="flex gap-2">
                         <button

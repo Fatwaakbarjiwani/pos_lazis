@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { printReceipt } from '../utils/printReceipt'
+import { baseUrl } from '../utils/api'
 import { getTempTransactions, validateTempTransaction } from '../redux/actions/posActions'
 
 function formatRupiah(n) {
@@ -172,6 +173,25 @@ export default function PendingPage() {
                       <p className="text-lg font-bold text-zinc-900">Rp {formatRupiah(row.nominal)}</p>
                     </div>
                   </div>
+
+                  {row.metodePembayaran?.toUpperCase() !== 'TUNAI' && row.paymentProofImage && (
+                    <div className="mb-4">
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">Bukti Pembayaran</p>
+                      <a
+                        href={`${baseUrl}/api/images/${row.paymentProofImage}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex aspect-square max-h-40 w-full items-center justify-center overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50"
+                      >
+                        <img
+                          src={`${baseUrl}/api/images/${row.paymentProofImage}`}
+                          alt="Bukti pembayaran"
+                          className="max-h-full max-w-full object-contain"
+                        />
+                      </a>
+                      <p className="mt-1 text-[10px] text-zinc-400">Klik untuk memperbesar</p>
+                    </div>
+                  )}
 
                   <div className="space-y-2">
                     <div className="flex gap-2">
