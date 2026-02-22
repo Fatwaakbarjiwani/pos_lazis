@@ -433,7 +433,6 @@ function buildNormalHtml(r) {
   <div class="receipt-page">
   <div class="kop-wrapper">
     <img src="/kopcetakbiasa.png" alt="Kop LAZIS Sultan Agung" class="kop-img" />
-    <div class="receipt-no-overlay">No. ${escapeHtml(r.nomorBukti || '—')}</div>
   </div>
 
   <div class="main-content">
